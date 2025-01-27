@@ -43,7 +43,6 @@ class ProductController extends Controller
 
         return view('products.index', compact('products', 'companies'));
 
-
     }
     
 
@@ -54,8 +53,8 @@ class ProductController extends Controller
         return view('products.create', compact('companies'));
     }
 
-    public function store(ProductRequest $request)
-{
+    public function store(ProductRequest $request){
+
     $request->validate([
         'product_name' => 'required|string|max:255',
         'price' => 'required|numeric|min:0',
@@ -65,24 +64,10 @@ class ProductController extends Controller
     ]);
 
     try {
-
         DB::beginTransaction();
 
-        $imgPath = null;
-
         $product = new Product();
-
-        if ($request->hasFile('img_path')) {
-            $imgPath = $request->file('img_path')->store('products', 'public');
-        }
-
-        Product::create([
-            'product_name' => $request->input('product_name'),
-            'price' => $request->input('price'),
-            'stock' => $request->input('stock'),
-            'company_id' => $request->input('company_id'),
-            'img_path' => $imgPath,
-        ]);
+        $product->createProduct($request);
 
         DB::commit();
 
@@ -139,42 +124,22 @@ class ProductController extends Controller
             DB::beginTransaction();
     
             $product = Product::findOrFail($id);
-
             $product->updateProduct($request);
 
             DB::commit();
-
-    
-            if ($request->hasFile('img_path')) {
-                $filename = $request->img_path->getClientOriginalName();
-                $filePath = $request->img_path->storeAs('products', $filename, 'public');
-                $product->img_path = '/storage/' . $filePath;
-            }
-    
-            $product->update([
-                'product_name' => $request->product_name,
-                'company_id' => $request->company_id,
-                'price' => $request->price,
-                'stock' => $request->stock,
-                'comment' => $request->comment,
-                'img_path' => $imgPath,
-            ]);
-    
     
             return redirect()->route('products.index')
-            ->with('success', 'Product updated successfully');  
-              } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', '更新に失敗しました: ' . $e->getMessage())->withInput();
-        }
+            ->with('success', '商品が正常に更新されました！');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()
+            ->with('error', '商品の更新中にエラーが発生しました: ' . $e->getMessage())
+            ->withInput();
+    }
     }
 
     
-        
-    
 
-
-    
 
     public function destroy($id)
         {

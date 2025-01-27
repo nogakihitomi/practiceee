@@ -39,37 +39,51 @@ class Product extends Model
 
     public static function createProduct($data)
     {
-        $imgPath = $data->hasFile('img_path')
-            ? '/storage/' . $data->file('img_path')->storeAs('products', $data->file('img_path')->getClientOriginalName(), 'public')
-            : 'images/dummy-product.png';
+        $product = new self();
+        $imgPath = $product->saveImage($data->file('img_path'));
 
-        self::create([
-            'product_name' => $data->input('product_name'),
-            'price' => $data->input('price'),
-            'stock' => $data->input('stock'),
-            'company_id' => $data->input('company_id'),
-            'comment' => $data->input('comment'),
-            'img_path' => $imgPath,
-        ]);
+    return self::create([
+        'product_name' => $data->input('product_name'),
+        'price' => $data->input('price'),
+        'stock' => $data->input('stock'),
+        'company_id' => $data->input('company_id'),
+        'comment' => $data->input('comment'),
+        'img_path' => $imgPath,
+    ]);
+
     }
 
-    public function updateProduct($data)
+    public function saveImage($file)
     {
-        $imgPath = $data->hasFile('img_path')
-            ? '/storage/' . $data->file('img_path')->storeAs('products', $data->file('img_path')->getClientOriginalName(), 'public')
-            : $this->img_path;
+        if ($file) {
 
+            $extension = $file->getClientOriginalExtension();
+    
+            $filename = uniqid() . '.' . $extension;
+    
+            $path = $file->storeAs('products', $filename, 'public');
+    
+            return '/storage/' . $path;
+        }
+    
+        return null;
+    }
+
+    public function updateProduct($request)
+    {
+        $imgPath = $request->hasFile('img_path')
+            ? $this->saveImage($request->file('img_path'))
+            : $this->img_path;
+    
         $this->update([
-            'product_name' => $data->input('product_name'),
-            'price' => $data->input('price'),
-            'stock' => $data->input('stock'),
-            'company_id' => $data->input('company_id'),
-            'comment' => $data->input('comment'),
-            'img_path' => $imgPath,
+            'product_name' => $request->product_name,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'company_id' => $request->company_id,
+            'comment' => $request->comment,
+            'img_path' => $imgPath, 
         ]);
     }
 
 }
-
-
 
