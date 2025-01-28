@@ -7,7 +7,7 @@ use App\Models\Product;
 use App\Models\Company; 
 use Illuminate\Http\Request; 
 use App\Http\Requests\ProductRequest;
-use App\Http\Requests\UpdateProducRequest;
+use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Image;
 use Illuminate\Support\Facades\Storage;
@@ -109,7 +109,7 @@ class ProductController extends Controller
     }
 
 
-    public function update(ProductRequest $request, $id)
+    public function update(UpdateProductRequest $request, $id)
     {
         $request->validate([
             'product_name' => 'required|string|max:255',
@@ -130,12 +130,12 @@ class ProductController extends Controller
     
             return redirect()->route('products.index')
             ->with('success', '商品が正常に更新されました！');
-    } catch (\Exception $e) {
+        } catch (\Exception $e) {
         DB::rollBack();
         return redirect()->back()
             ->with('error', '商品の更新中にエラーが発生しました: ' . $e->getMessage())
             ->withInput();
-    }
+        }
     }
 
     
