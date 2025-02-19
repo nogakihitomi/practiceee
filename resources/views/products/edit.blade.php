@@ -48,7 +48,7 @@
             <label for="stock" class="form-label">在庫数:</label>
             <input id="stock" type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}">
             @if($errors->has('stock'))
-                        <p>{{ $errors->first('stock') }}</p>
+             <p class="text-danger">{{ $errors->first('stock') }}</p>
                     @endif
         </div>
 
