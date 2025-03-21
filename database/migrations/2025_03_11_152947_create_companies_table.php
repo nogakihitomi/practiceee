@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -23,6 +22,7 @@ class CreateCompaniesTable extends Migration
         });
     }
 
+    
     /**
      * Reverse the migrations.
      *
